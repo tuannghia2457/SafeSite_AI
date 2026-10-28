@@ -1,0 +1,24 @@
+{
+  "name": "safesite-ai-demo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "SafeSite AI - interactive prototype demo of the AI workplace safety workflow",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lucide-react": "^1.62.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.2",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.5"
+  }
+}
