@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react'
 import { CAMERAS, CURRENT_USER, buildInitialState, byId, createAlert } from '../data/mockData'
 import { makeT } from '../lib/i18n'
+import { request } from '../backend/api'
 
 const STORAGE_KEY = 'safesite-demo-v1'
 const SIMULATION_INTERVAL = 25_000
@@ -166,8 +167,11 @@ export function DemoProvider({ children }) {
       setLang: (lang) => dispatch({ type: 'SET_LANG', lang }),
       toggleSimulation: () => dispatch({ type: 'TOGGLE_SIMULATION' }),
       dropToast: (id) => dispatch({ type: 'DROP_TOAST', id }),
-      reset: () => {
+      /** Generic toast: kind is 'success' | 'warning'; `key` is an i18n key. */
+      notify: (key, vars, kind = 'success') => dispatch({ type: 'PUSH_TOAST', toast: { id: toastId(), kind, key, vars } }),
+      reset: async () => {
         dispatch({ type: 'RESET' })
+        await request('POST', '/api/admin/reset')
         dispatch({ type: 'PUSH_TOAST', toast: { id: toastId(), kind: 'success', key: 'toast.reset' } })
       },
     }

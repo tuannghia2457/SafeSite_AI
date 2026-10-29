@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, BellRing, Cctv, ClipboardCheck, Gauge, MapPin } from 'lucide-react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { ArrowRight, BellRing, Cctv, ClipboardCheck, Gauge, MapPin, Smartphone } from 'lucide-react'
+import { db, dayKey } from '../backend/db'
 import { Card, CardTitle, PageHeader, ProgressBar, SeverityChip, AlertStatusChip } from '../components/ui'
 import ViolationsChart from '../components/ViolationsChart'
 import { CAMERAS, SITES, VIOLATIONS, byId } from '../data/mockData'
@@ -20,6 +22,55 @@ function Kpi({ Icon, label, value, sub, to }) {
     </Card>
   )
   return to ? <Link to={to}>{content}</Link> : content
+}
+
+/** Today's pre-shift check-in status, read live from the demo database. */
+function CheckinStrip({ siteId }) {
+  const { t } = useDemo()
+  const data = useLiveQuery(async () => {
+    const [workers, checkins] = await Promise.all([
+      db.workers.toArray(),
+      db.checkins.where('date').equals(dayKey(Date.now())).toArray(),
+    ])
+    const inSite = (x) => siteId === 'all' || x.siteId === siteId
+    const list = checkins.filter(inSite)
+    return {
+      expected: workers.filter(inSite).length,
+      checkedIn: list.length,
+      cleared: list.filter((c) => c.status === 'cleared').length,
+      pending: list.filter((c) => c.status === 'blocked' || c.status === 'flagged').length,
+    }
+  }, [siteId])
+  if (!data) return null
+  const items = [
+    [t('dash.ci.checkedIn'), `${data.checkedIn}/${data.expected}`],
+    [t('dash.ci.cleared'), data.cleared],
+    [t('dash.ci.pending'), data.pending],
+    [t('dash.ci.missing'), data.expected - data.checkedIn],
+  ]
+  return (
+    <Link to="/attendance">
+      <Card className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-3 !p-5 transition-colors hover:bg-blueprint/5">
+        <div className="flex items-center gap-3">
+          <span className="hairline flex size-9 items-center justify-center rounded-full">
+            <Smartphone size={16} className="text-frost" aria-hidden />
+          </span>
+          <div>
+            <p className="text-sm font-medium text-ice">{t('dash.ci.title')}</p>
+            <p className="text-xs text-fog">{t('dash.ci.sub')}</p>
+          </div>
+        </div>
+        <ProgressBar value={data.checkedIn} total={data.expected} className="min-w-32 flex-1" />
+        {items.map(([label, value]) => (
+          <div key={label}>
+            <p className={`font-display text-xl font-medium tabular-nums ${label === t('dash.ci.pending') && value ? 'text-warning' : 'text-ice'}`}>{value}</p>
+            <p className="text-xs text-fog">{label}</p>
+          </div>
+        ))}
+        <ArrowRight size={14} className="text-fog" aria-hidden />
+      </Card>
+    </Link>
+  )
 }
 
 export default function Dashboard() {
@@ -64,6 +115,8 @@ export default function Dashboard() {
         />
         <Kpi Icon={Cctv} label={t('dash.kpi.cameras')} value={`${cams.online}/${cams.total}`} sub={t('dash.kpi.camerasSub')} to="/monitoring" />
       </div>
+
+      <CheckinStrip siteId={siteId} />
 
       <div className="mt-4 grid gap-4 lg:grid-cols-5">
         <Card className="lg:col-span-3">

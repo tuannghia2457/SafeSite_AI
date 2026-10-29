@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, Cctv, ClipboardCheck, Factory, FileText, Globe, Handshake, Warehouse } from 'lucide-react'
 import Logo from '../components/Logo'
 import CameraFrame from '../components/CameraFrame'
+import SiteHeader, { scrollTo } from '../components/SiteHeader'
 import { Eyebrow } from '../components/ui'
 import { WORKFLOW } from '../components/Workflow'
-import { LangToggle } from '../components/Layout'
 import { CAMERAS, buildLiveWorkers } from '../data/mockData'
 import { useDemo } from '../state/DemoStore'
 
@@ -31,20 +31,14 @@ export default function Landing() {
       <div className="bg-blueprint-grid pointer-events-none absolute inset-0" aria-hidden />
       <div className="spotlight pointer-events-none absolute inset-x-0 top-0 h-[600px]" aria-hidden />
 
-      <header className="relative z-10 mx-auto flex max-w-[1200px] items-center justify-between px-6 py-5">
-        <Logo />
-        <nav className="hidden items-center gap-6 text-sm text-mist md:flex">
-          <a href="#workflow" className="hover:text-white">{t('landing.nav.workflow')}</a>
-          <a href="#features" className="hover:text-white">{t('landing.nav.features')}</a>
-          <a href="#customers" className="hover:text-white">{t('landing.nav.customers')}</a>
-        </nav>
-        <div className="flex items-center gap-3">
-          <LangToggle />
-          <Link to="/dashboard" className="btn btn-ghost">
-            {t('landing.openDemo')}
-          </Link>
-        </div>
-      </header>
+      <SiteHeader
+        sections={[
+          { id: 'workflow', label: t('landing.nav.workflow') },
+          { id: 'features', label: t('landing.nav.features') },
+          { id: 'customers', label: t('landing.nav.customers') },
+        ]}
+        pages={[{ to: '/evidence', label: t('landing.nav.evidence') }]}
+      />
 
       <main className="relative z-10">
         {/* Hero */}
@@ -56,9 +50,9 @@ export default function Landing() {
             <Link to="/monitoring" className="btn btn-cta">
               {t('landing.start')} <ArrowRight size={16} aria-hidden />
             </Link>
-            <a href="#workflow" className="btn btn-ghost">
+            <button onClick={() => scrollTo('workflow')} className="btn btn-ghost">
               {t('landing.seeWorkflow')}
-            </a>
+            </button>
           </div>
 
           <div className="relative mx-auto mt-16 max-w-4xl">
@@ -86,8 +80,8 @@ export default function Landing() {
           <h2 className="mt-5 font-display text-4xl font-medium text-ice md:text-[44px]">{t('landing.workflow.title')}</h2>
           <p className="mx-auto mt-4 max-w-[640px] text-mist">{t('landing.workflow.body')}</p>
 
-          <ol className="relative mt-16 grid gap-10 md:grid-cols-4 md:gap-6">
-            <span className="absolute top-8 right-[12.5%] left-[12.5%] hidden h-px bg-edge md:block" aria-hidden />
+          <ol className="relative mt-16 grid gap-10 md:grid-cols-5 md:gap-6">
+            <span className="absolute top-8 right-[10%] left-[10%] hidden h-px bg-edge md:block" aria-hidden />
             {WORKFLOW.map(({ key, to, Icon }, i) => (
               <li key={key} className="relative flex flex-col items-center">
                 <Link
@@ -141,9 +135,14 @@ export default function Landing() {
             <Globe size={28} className="mx-auto text-frost" strokeWidth={1.5} aria-hidden />
             <h2 className="mt-6 font-display text-4xl font-medium text-skywash md:text-[44px]">{t('landing.closing.title')}</h2>
             <p className="mx-auto mt-4 max-w-[640px] text-mist">{t('landing.closing.body')}</p>
-            <Link to="/dashboard" className="btn btn-cta mt-8">
-              {t('landing.openDemo')} <ArrowRight size={16} aria-hidden />
-            </Link>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link to="/dashboard" className="btn btn-cta">
+                {t('landing.openDemo')} <ArrowRight size={16} aria-hidden />
+              </Link>
+              <Link to="/evidence" className="btn btn-ghost">
+                {t('landing.seeEvidence')}
+              </Link>
+            </div>
           </div>
         </section>
       </main>

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CircleCheck, Siren, X } from 'lucide-react'
+import { CircleCheck, Siren, TriangleAlert, X } from 'lucide-react'
 import { CAMERAS, VIOLATIONS, byId } from '../data/mockData'
 import { bi } from '../lib/format'
 import { useDemo } from '../state/DemoStore'
@@ -14,7 +14,7 @@ function Toast({ toast }) {
     return () => clearTimeout(timer)
   }, [toast.id, toast.kind, dropToast])
 
-  let Icon = CircleCheck
+  let Icon = toast.kind === 'warning' ? TriangleAlert : CircleCheck
   let title = t(toast.key ?? '', toast.vars)
   let body = null
   let onClick = null
@@ -33,7 +33,7 @@ function Toast({ toast }) {
 
   return (
     <div className="glass-modal animate-toast-in flex w-80 items-start gap-3 p-4">
-      <Icon size={18} className={`mt-0.5 shrink-0 ${toast.kind === 'alert' ? 'text-critical' : 'text-good'}`} aria-hidden />
+      <Icon size={18} className={`mt-0.5 shrink-0 ${{ alert: 'text-critical', warning: 'text-warning' }[toast.kind] ?? 'text-good'}`} aria-hidden />
       <button className="min-w-0 flex-1 text-left" onClick={onClick ?? undefined} disabled={!onClick}>
         <p className="text-sm font-medium text-ice">{title}</p>
         {body && <p className="mt-0.5 truncate text-xs text-fog">{body}</p>}

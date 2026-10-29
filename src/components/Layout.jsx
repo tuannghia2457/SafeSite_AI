@@ -1,5 +1,7 @@
 import { NavLink, Outlet, Link } from 'react-router-dom'
-import { BellRing, Cctv, ClipboardCheck, FileText, House, LayoutDashboard, Pause, Play, RotateCcw } from 'lucide-react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { BellRing, Building2, Cctv, ChartColumn, ClipboardCheck, Database, FileText, House, LayoutDashboard, Pause, Play, RotateCcw, Smartphone, Users } from 'lucide-react'
+import { db, dayKey } from '../backend/db'
 import Logo from './Logo'
 import Toasts from './Toasts'
 import { GuideBanner, WorkflowStepper } from './Workflow'
@@ -50,14 +52,39 @@ export default function Layout() {
   const newAlerts = state.alerts.filter((a) => a.status === 'new').length
   const openIncidents = state.incidents.filter(isOpen).length
   const me = byId(USERS, CURRENT_USER)
+  const pendingCheckins =
+    useLiveQuery(() => db.checkins.where('date').equals(dayKey(Date.now())).filter((c) => c.status === 'blocked' || c.status === 'flagged').count(), []) ?? 0
 
-  const nav = [
-    { to: '/dashboard', label: t('nav.dashboard'), Icon: LayoutDashboard },
-    { to: '/monitoring', label: t('nav.monitoring'), Icon: Cctv },
-    { to: '/alerts', label: t('nav.alerts'), Icon: BellRing, badge: newAlerts },
-    { to: '/incidents', label: t('nav.incidents'), Icon: ClipboardCheck, badge: openIncidents },
-    { to: '/reports', label: t('nav.reports'), Icon: FileText },
+  const groups = [
+    {
+      label: t('nav.group.workforce'),
+      items: [
+        { to: '/checkin', label: t('nav.checkin'), Icon: Smartphone },
+        { to: '/attendance', label: t('nav.attendance'), Icon: Users, badge: pendingCheckins },
+      ],
+    },
+    {
+      label: t('nav.group.ops'),
+      items: [
+        { to: '/dashboard', label: t('nav.dashboard'), Icon: LayoutDashboard },
+        { to: '/monitoring', label: t('nav.monitoring'), Icon: Cctv },
+        { to: '/alerts', label: t('nav.alerts'), Icon: BellRing, badge: newAlerts },
+        { to: '/incidents', label: t('nav.incidents'), Icon: ClipboardCheck, badge: openIncidents },
+      ],
+    },
+    {
+      label: t('nav.group.compliance'),
+      items: [
+        { to: '/companies', label: t('nav.companies'), Icon: Building2 },
+        { to: '/reports', label: t('nav.reports'), Icon: FileText },
+      ],
+    },
+    {
+      label: t('nav.group.platform'),
+      items: [{ to: '/system', label: t('nav.system'), Icon: Database }],
+    },
   ]
+  const nav = groups.flatMap((g) => g.items)
 
   const linkCls = ({ isActive }) =>
     `flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors ${
@@ -69,24 +96,32 @@ export default function Layout() {
       <div className="bg-blueprint-grid pointer-events-none fixed inset-0 print:hidden" aria-hidden />
 
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-r border-edge bg-canvas/80 px-4 py-5 backdrop-blur lg:flex print:hidden">
-        <Link to="/" className="mb-8 px-2">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-r border-edge bg-canvas/80 px-4 py-5 backdrop-blur lg:flex print:hidden overflow-y-auto">
+        <Link to="/" className="mb-6 px-2">
           <Logo />
         </Link>
-        <nav className="flex flex-col gap-1">
-          {nav.map(({ to, label, Icon, badge }) => (
-            <NavLink key={to} to={to} className={linkCls}>
-              <Icon size={17} aria-hidden />
-              <span className="flex-1">{label}</span>
-              {badge > 0 && (
-                <span className="rounded-full bg-blueprint/15 px-2 text-xs text-ice tabular-nums">{badge}</span>
-              )}
-            </NavLink>
+        <nav className="flex flex-col gap-4">
+          {groups.map((g) => (
+            <div key={g.label} className="flex flex-col gap-0.5">
+              <p className="eyebrow mb-1 px-3 !text-[10px] !text-fog">{g.label}</p>
+              {g.items.map(({ to, label, Icon, badge }) => (
+                <NavLink key={to} to={to} className={linkCls}>
+                  <Icon size={17} aria-hidden />
+                  <span className="flex-1">{label}</span>
+                  {badge > 0 && (
+                    <span className="rounded-full bg-blueprint/15 px-2 text-xs text-ice tabular-nums">{badge}</span>
+                  )}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
-        <div className="mt-6 border-t border-edge pt-4">
+        <div className="mt-6 flex flex-col gap-1 border-t border-edge pt-4">
           <NavLink to="/" end className={linkCls}>
             <House size={17} aria-hidden /> {t('nav.overview')}
+          </NavLink>
+          <NavLink to="/evidence" className={linkCls}>
+            <ChartColumn size={17} aria-hidden /> {t('nav.evidence')}
           </NavLink>
         </div>
 

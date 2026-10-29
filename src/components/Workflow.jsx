@@ -1,17 +1,20 @@
 import { Link, useLocation } from 'react-router-dom'
-import { ArrowRight, BellRing, Cctv, ClipboardCheck, FileText } from 'lucide-react'
+import { ArrowRight, BellRing, Cctv, ClipboardCheck, FileText, Smartphone } from 'lucide-react'
 import { useDemo } from '../state/DemoStore'
 
+// `also` lists extra routes that belong to the same step (they show the same guide banner).
 export const WORKFLOW = [
+  { key: 'checkin', to: '/checkin', also: ['/attendance'], Icon: Smartphone },
   { key: 'detect', to: '/monitoring', Icon: Cctv },
   { key: 'review', to: '/alerts', Icon: BellRing },
   { key: 'act', to: '/incidents', Icon: ClipboardCheck },
-  { key: 'report', to: '/reports', Icon: FileText },
+  { key: 'report', to: '/reports', also: ['/companies'], Icon: FileText },
 ]
 
-export const stepIndexFor = (pathname) => WORKFLOW.findIndex((s) => pathname.startsWith(s.to))
+export const stepIndexFor = (pathname) =>
+  WORKFLOW.findIndex((s) => [s.to, ...(s.also ?? [])].some((p) => pathname.startsWith(p)))
 
-/** Compact 4-step workflow indicator shown in the app top bar. */
+/** Compact workflow indicator shown in the app top bar. */
 export function WorkflowStepper() {
   const { t } = useDemo()
   const { pathname } = useLocation()

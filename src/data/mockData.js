@@ -82,14 +82,15 @@ export const SITES = [
 ]
 
 // Scene coordinates use a 320 x 180 viewBox. `zone` is a restricted area on the floor.
+// `companyId` is the contractor responsible for the camera's work area: incidents are attributed by zone, never by face.
 export const CAMERAS = [
-  { id: 'CAM-01', siteId: 'S1', scene: 'construction', status: 'online', name: { en: 'Tower crane base', vi: 'Chân cẩu tháp' }, zone: { x: 196, y: 118, w: 108, h: 52 } },
-  { id: 'CAM-02', siteId: 'S1', scene: 'construction', status: 'online', name: { en: 'Level 12 slab', vi: 'Sàn tầng 12' }, zone: null },
-  { id: 'CAM-03', siteId: 'S1', scene: 'construction', status: 'offline', name: { en: 'Main gate', vi: 'Cổng chính' }, zone: null },
-  { id: 'CAM-04', siteId: 'S2', scene: 'factory', status: 'online', name: { en: 'Cutting line A', vi: 'Dây chuyền cắt A' }, zone: { x: 18, y: 116, w: 110, h: 54 } },
-  { id: 'CAM-05', siteId: 'S2', scene: 'factory', status: 'online', name: { en: 'Welding bay', vi: 'Khu hàn' }, zone: null },
-  { id: 'CAM-06', siteId: 'S3', scene: 'warehouse', status: 'online', name: { en: 'Loading dock', vi: 'Bến xếp dỡ' }, zone: { x: 170, y: 120, w: 130, h: 50 } },
-  { id: 'CAM-07', siteId: 'S3', scene: 'warehouse', status: 'online', name: { en: 'Racking aisle 3', vi: 'Lối kệ hàng số 3' }, zone: null },
+  { id: 'CAM-01', companyId: 'C1', siteId: 'S1', scene: 'construction', status: 'online', name: { en: 'Tower crane base', vi: 'Chân cẩu tháp' }, zone: { x: 196, y: 118, w: 108, h: 52 } },
+  { id: 'CAM-02', companyId: 'C2', siteId: 'S1', scene: 'construction', status: 'online', name: { en: 'Level 12 slab', vi: 'Sàn tầng 12' }, zone: null },
+  { id: 'CAM-03', companyId: 'C1', siteId: 'S1', scene: 'construction', status: 'offline', name: { en: 'Main gate', vi: 'Cổng chính' }, zone: null },
+  { id: 'CAM-04', companyId: 'C3', siteId: 'S2', scene: 'factory', status: 'online', name: { en: 'Cutting line A', vi: 'Dây chuyền cắt A' }, zone: { x: 18, y: 116, w: 110, h: 54 } },
+  { id: 'CAM-05', companyId: 'C4', siteId: 'S2', scene: 'factory', status: 'online', name: { en: 'Welding bay', vi: 'Khu hàn' }, zone: null },
+  { id: 'CAM-06', companyId: 'C5', siteId: 'S3', scene: 'warehouse', status: 'online', name: { en: 'Loading dock', vi: 'Bến xếp dỡ' }, zone: { x: 170, y: 120, w: 130, h: 50 } },
+  { id: 'CAM-07', companyId: 'C5', siteId: 'S3', scene: 'warehouse', status: 'online', name: { en: 'Racking aisle 3', vi: 'Lối kệ hàng số 3' }, zone: null },
 ]
 
 export const byId = (list, id) => list.find((x) => x.id === id)

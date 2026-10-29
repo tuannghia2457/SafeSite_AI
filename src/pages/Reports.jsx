@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { FileText, Loader, Printer, Sparkles } from 'lucide-react'
 import CameraFrame from '../components/CameraFrame'
 import Logo from '../components/Logo'
+import { Bi, SectionTitle } from '../components/report'
 import { Card, Field, PageHeader } from '../components/ui'
 import { CAMERAS, CURRENT_USER, INCIDENT_STATUS, SEVERITY, SITES, USERS, VIOLATIONS, VIOLATION_TYPES, byId } from '../data/mockData'
 import { bi, fmtDate, fmtDateTime, fmtTime, pct } from '../lib/format'
@@ -43,27 +44,6 @@ const R = {
     vi: 'Báo cáo được tạo tự động bởi SafeSite AI từ dữ liệu giám sát và quản lý sự cố. Bản demo sử dụng dữ liệu mô phỏng.',
     en: 'Generated automatically by SafeSite AI from monitoring and incident-management records. This demo uses simulated data.',
   },
-}
-
-/** Vietnamese label on top, English below. */
-function Bi({ v, className = '', sub = 'text-fog print:text-gray-500' }) {
-  return (
-    <span className={className}>
-      {v.vi}
-      <span className={`block text-[0.85em] font-normal ${sub}`}>{v.en}</span>
-    </span>
-  )
-}
-
-function SectionTitle({ n, v }) {
-  return (
-    <h3 className="mb-4 flex items-baseline gap-3 border-b border-edge pb-2 print:border-gray-300">
-      <span className="font-mono text-xs text-fog print:text-gray-500">0{n}</span>
-      <span className="font-medium text-ice print:text-black">
-        {v.vi} <span className="font-normal text-fog print:text-gray-500">/ {v.en}</span>
-      </span>
-    </h3>
-  )
 }
 
 function SafetyReport({ siteId, days, generatedAt }) {
